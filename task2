@@ -1,0 +1,43 @@
+import csv
+from collections import defaultdict
+from fpdf import FPDF
+
+
+def read_and_analyze(file_path):
+    data = defaultdict(list)
+    with open(file_path, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            department = row['Department']
+            score = int(row['Score'])
+            data[department].append(score)
+    return data
+
+def calculate_averages(data):
+    averages = {}
+    for dept, scores in data.items():
+        averages[dept] = sum(scores) / len(scores)
+    return averages
+
+
+def generate_pdf_report(averages, output_file):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=14)
+
+    pdf.cell(200, 10, txt="Department Performance Report", ln=True, align='C')
+    pdf.ln(10)
+
+    pdf.set_font("Arial", size=12)
+    for dept, avg in averages.items():
+        pdf.cell(200, 10, txt=f"{dept}: Average Score = {avg:.2f}", ln=True)
+
+    pdf.output(output_file)
+
+
+if __name__ == "__main__":
+
+    data = read_and_analyze("C:/Users/M.hemanth kumar redd/practise/data.csv")
+    averages = calculate_averages(data)
+    generate_pdf_report(averages, "report.pdf")
+    print("Report generated as report.pdf")
